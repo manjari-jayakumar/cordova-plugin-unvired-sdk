@@ -1,0 +1,34 @@
+{
+  "name": "cordova-plugin-unvired-sdk",
+  "version": "0.0.1",
+  "description": "Unvired Cordova Plugin",
+  "cordova": {
+    "id": "cordova-plugin-unvired-sdk",
+    "platforms": [
+      "ios"
+    ]
+  },
+  "keywords": [
+    "ecosystem:cordova",
+    "cordova-ios"
+  ],
+  "author": "Unvired Inc.",
+  "license": "UNLICENSED",
+  "contributors": [
+    {
+      "name": "Venkadesh P",
+      "email": "venkadesh.p@unvired.com",
+      "url": "http://unvired.com"
+    },
+    {
+      "name": "Tarak Kar",
+      "email": "tarak.kar@unvired.com",
+      "url": "http://unvired.com"
+    },
+    {
+      "name": "Srini Subramanian",
+      "email": "srini@unvired.com",
+      "url": "http://unvired.com"
+    }
+  ]
+}

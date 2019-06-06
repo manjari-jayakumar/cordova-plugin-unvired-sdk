@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='utf-8'?>
+<plugin id="cordova-plugin-unvired-sdk" version="0.0.1" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
+    <name>UnviredSDK</name>
+    <js-module name="UnviredSDK" src="www/kernel.js">
+        <clobbers target="ump" />
+    </js-module>
+    <platform name="ios">
+        <config-file parent="/*" target="config.xml">
+            <feature name="LoggerPlugin">
+                <param name="ios-package" value="IOSLoggerPlugin" />
+            </feature>
+            <feature name="SettingsPlugin">
+                <param name="ios-package" value="IOSFWSettingsPlugin" />
+            </feature>
+            <feature name="DatabasePlugin">
+                <param name="ios-package" value="IOSDatabasePlugin" />
+            </feature>
+            <feature name="SyncEnginePlugin">
+                <param name="ios-package" value="IOSSyncEnginePlugin" />
+            </feature>
+            <feature name="LoginPlugin">
+                <param name="ios-package" value="IOSLoginPlugin" />
+            </feature>
+            <feature name="AttachmentPlugin">
+                <param name="ios-package" value="AttachmentPlugin" />
+            </feature>
+        </config-file>
+        <header-file src="src/ios/IOSAuthPlugin.h"/>
+        <header-file src="src/ios/IOSDatabasePlugin.h"/>
+        <header-file src="src/ios/IOSFWSettingsPlugin.h"/>
+        <header-file src="src/ios/IOSLoggerPlugin.h"/>
+        <header-file src="src/ios/IOSLoginPlugin.h"/>
+        <header-file src="src/ios/IOSSyncEnginePlugin.h"/>
+        <header-file src="src/ios/UnviredFrameworkUtils.h"/>
+        <header-file src="src/ios/AttachmentPlugin.h"/>
+    </platform>
+</plugin>
