@@ -1,8 +1,8 @@
 
 var exec = require('cordova/exec');
-
+var parameters;
 var getPromisedCordovaExec = function (success, fail, pluginName, command, args) {
-    var toReturn, deferred, injector, $q;
+    /* var toReturn, deferred, injector, $q;
     if (success === undefined) {
       if (window.angular) {
         injector = angular.injector(["ng"]);
@@ -34,13 +34,12 @@ var getPromisedCordovaExec = function (success, fail, pluginName, command, args)
       } else {
         return console.error('AppVersion either needs a success callback, or jQuery/AngularJS/Promise/WinJS.Promise defined for using promises');
       }
-    }
+    } */
     cordova.exec(success, fail, pluginName, command, args);
-    return toReturn;
+    /* return toReturn; */
   };
 
 var UMP = function() {
-
 };
 
 var helper = function() {
@@ -147,6 +146,7 @@ var restApis = {
     users: '/UMP/API/v2/users/'
 };
 
+/* NOT REQUIRED. SINCE LOGIN PARAMETERS IS DEFINED AS A NEW CLASS IN IONIC WRAPPER.
 var loginParameters = {
     appName: "",
     company: "",
@@ -166,6 +166,7 @@ var loginParameters = {
     //Set time to run SentItem in interval of given minutes. Timer will start/stop only when there are items in SentItem. 
     autoSyncTime: "0"
 }
+*/
 
 UMP.prototype.logDebug = function (sourceClass, method, message) {
     cordova.exec(null, null, "LoggerPlugin", "logDebug", [{
@@ -210,12 +211,13 @@ UMP.prototype.sendLogViaEmail = function (success, fail) {
     return getPromisedCordovaExec(success, fail, "LoggerPlugin", "sendViaEmail", []);
 };
 
-UMP.prototype.login = function (success, fail) {
-    if (helper.isEmpty(login.parameters.appName)) {
-        helper.sendError("Please provide valid app name!", callback);
+UMP.prototype.login = function (loginParameters, success, fail) {
+    parameters = loginParameters
+    if (helper.isEmpty(parameters.appName)) {
+        helper.sendError("Please provide valid app name!", fail);
         return;
     }
-    return getPromisedCordovaExec(success, fail, "LoginPlugin", "login", [this.parameters, cb]);
+    return getPromisedCordovaExec(success, fail, "LoginPlugin", "login", [parameters]);
 };
 /**;
  * logout() - Close all database and shut down all thread
@@ -240,9 +242,10 @@ UMP.prototype.logout = function (success, fail) {
  *  @param {function} callback - (Optional) user supplied async callback / error handler
  */
 UMP.prototype.authenticateAndActivate = function (success, fail) {
-    if (!helper.validateLoignParameters(loginMode.authActivate, resolve))
+    if (!helper.validateLoginParameters(loginMode.authActivate, fail))
         return;
-    return getPromisedCordovaExec(success, fail, "LoginPlugin", "authenticateAndActivate", [this.parameters]);
+        
+    return getPromisedCordovaExec(success, fail, "LoginPlugin", "authenticateAndActivate", [parameters]);
 };
 /**
  * authenticateLocal - Authenticate with username,password saved in database
@@ -259,9 +262,9 @@ UMP.prototype.authenticateAndActivate = function (success, fail) {
  *  Mobile Only api
  */
 UMP.prototype.authenticateLocal = function (success, fail) {
-    if (!helper.validateLoignParameters(loginMode.authLocal, resolve))
+    if (!helper.validateLoginParameters(loginMode.authLocal, fail))
         return;
-    return getPromisedCordovaExec(success, fail, "LoginPlugin", "authenticateLocal", [this.parameters]);
+    return getPromisedCordovaExec(success, fail, "LoginPlugin", "authenticateLocal", [parameters]);
 };
 /**
  * getAllAccount - Get all existing Account
@@ -296,7 +299,7 @@ UMP.prototype.deleteAccount = function (account, success, fail) {
     return getPromisedCordovaExec(success, fail, "LoginPlugin", "deleteAccount", [account]);
 };
 
-UMP.parameters = loginParameters;
+
 
 /**
  * getInfoMessages - Get list of InfoMessages
@@ -751,13 +754,14 @@ helper.isEmpty = function (value) {
         return true;
     return false;
 };
-helper.validateLoignParameters = function (mode, callback) {
-    if (this.isEmpty(loginParameters.loginType)) {
-        this.sendError("Incorrect Login Type!", callback);
+helper.validateLoginParameters = function (mode, callback) {
+    if (this.isEmpty(parameters.loginType)) {
+        this.sendError("No Login Type specified in LoginParameters!", callback);
         return false;
     }
-    if (loginParameters.loginType === this.loginType.sap || loginParameters.loginType === this.loginType.ads) {
-        if (!loginParameters.domain) {
+    // FIXME: 
+    if (parameters.loginType === 'sap' /* this.loginType.sap */ || parameters.loginType === 'ads' /* this.loginType.ads */) {
+        if (!parameters.domain) {
             this.sendError("Please provide Domain!", callback);
             return false;
         }
@@ -769,13 +773,13 @@ helper.validateLoignParameters = function (mode, callback) {
     var err = undefined;
     switch (mode) {
         case loginMode.authActivate:
-            if (this.isEmpty(loginParameters.url))
+            if (this.isEmpty(parameters.url))
                 err = "Please provide Url!";
-            else if (this.isEmpty(loginParameters.company))
+            else if (this.isEmpty(parameters.company))
                 err = "Please provide Company Name!";
-            else if (this.isEmpty(loginParameters.username))
+            else if (this.isEmpty(parameters.username))
                 err = "Please provide User Id!";
-            else if (this.isEmpty(loginParameters.password))
+            else if (this.isEmpty(parameters.password))
                 err = "Please provide Password!";
             if (err) {
                 this.sendError(err, callback);
@@ -783,9 +787,9 @@ helper.validateLoignParameters = function (mode, callback) {
             }
             break;
         case loginMode.authLocal:
-            if (this.isEmpty(loginParameters.username))
+            if (this.isEmpty(parameters.username))
                 err = "Please provide User Id!";
-            else if (this.isEmpty(loginParameters.password))
+            else if (this.isEmpty(parameters.password))
                 err = "Please provide Password!";
             if (err) {
                 this.sendError(err, callback);
