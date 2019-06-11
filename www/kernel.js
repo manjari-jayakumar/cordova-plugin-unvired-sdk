@@ -1,43 +1,6 @@
 
 var exec = require('cordova/exec');
 var parameters;
-var getPromisedCordovaExec = function (success, fail, pluginName, command, args) {
-    /* var toReturn, deferred, injector, $q;
-    if (success === undefined) {
-      if (window.angular) {
-        injector = angular.injector(["ng"]);
-        $q = injector.get("$q");
-        deferred = $q.defer();
-        success = deferred.resolve;
-        fail = deferred.reject;
-        toReturn = deferred.promise;
-      } else if (window.jQuery) {
-        deferred = jQuery.Deferred();
-        success = deferred.resolve;
-        fail = deferred.reject;
-        toReturn = deferred;
-      } else if (window.when && window.when.promise) {
-        deferred = when.defer();
-        success = deferred.resolve;
-        fail = deferred.reject;
-        toReturn = deferred.promise;
-      } else if (window.Promise) {
-        toReturn = new Promise(function(c, e) {
-          success = c;
-          fail = e;
-        });
-      } else if (window.WinJS && window.WinJS.Promise) {
-        toReturn = new WinJS.Promise(function(c, e) {
-          success = c;
-          fail = e;
-        });
-      } else {
-        return console.error('AppVersion either needs a success callback, or jQuery/AngularJS/Promise/WinJS.Promise defined for using promises');
-      }
-    } */
-    cordova.exec(success, fail, pluginName, command, args);
-    /* return toReturn; */
-  };
 
 var UMP = function() {
 };
@@ -196,7 +159,7 @@ UMP.prototype.logInfo = function (sourceClass, method, message) {
 };
 
 UMP.prototype.logRead = function (success, fail) {
-    return getPromisedCordovaExec(success, fail, "LoggerPlugin", "getLogs", []);
+    cordova.exec(success, fail, "LoggerPlugin", "getLogs", []);
 }
 
 UMP.prototype.logDelete = function () {
@@ -204,11 +167,11 @@ UMP.prototype.logDelete = function () {
 };
 
 UMP.prototype.sendLogToServer = function (success, fail) {
-    return getPromisedCordovaExec(success, fail, "LoggerPlugin", "sendViaServer", []);
+    cordova.exec(success, fail, "LoggerPlugin", "sendViaServer", []);
 };
 
 UMP.prototype.sendLogViaEmail = function (success, fail) {
-    return getPromisedCordovaExec(success, fail, "LoggerPlugin", "sendViaEmail", []);
+    cordova.exec(success, fail, "LoggerPlugin", "sendViaEmail", []);
 };
 
 UMP.prototype.login = function (loginParameters, success, fail) {
@@ -217,13 +180,13 @@ UMP.prototype.login = function (loginParameters, success, fail) {
         helper.sendError("Please provide valid app name!", fail);
         return;
     }
-    return getPromisedCordovaExec(success, fail, "LoginPlugin", "login", [parameters]);
+    cordova.exec(success, fail, "LoginPlugin", "login", [parameters]);
 };
 /**;
  * logout() - Close all database and shut down all thread
  */
 UMP.prototype.logout = function (success, fail) {
-    return getPromisedCordovaExec(success, fail, "LoginPlugin", "logout", []);
+    cordova.exec(success, fail, "LoginPlugin", "logout", []);
 };
 
 /**
@@ -245,7 +208,7 @@ UMP.prototype.authenticateAndActivate = function (success, fail) {
     if (!helper.validateLoginParameters(loginMode.authActivate, fail))
         return;
         
-    return getPromisedCordovaExec(success, fail, "LoginPlugin", "authenticateAndActivate", [parameters]);
+    cordova.exec(success, fail, "LoginPlugin", "authenticateAndActivate", [parameters]);
 };
 /**
  * authenticateLocal - Authenticate with username,password saved in database
@@ -264,7 +227,7 @@ UMP.prototype.authenticateAndActivate = function (success, fail) {
 UMP.prototype.authenticateLocal = function (success, fail) {
     if (!helper.validateLoginParameters(loginMode.authLocal, fail))
         return;
-    return getPromisedCordovaExec(success, fail, "LoginPlugin", "authenticateLocal", [parameters]);
+    cordova.exec(success, fail, "LoginPlugin", "authenticateLocal", [parameters]);
 };
 /**
  * getAllAccount - Get all existing Account
@@ -274,7 +237,7 @@ UMP.prototype.authenticateLocal = function (success, fail) {
  *  Mobile Only api
  */
 UMP.prototype.getAllAccounts = function (success, fail) {
-    return getPromisedCordovaExec(success, fail, "LoginPlugin", "getAllAccount", []);
+    cordova.exec(success, fail, "LoginPlugin", "getAllAccount", []);
 };
 /**
  * switchAccount - Switch to given Account.
@@ -285,7 +248,7 @@ UMP.prototype.getAllAccounts = function (success, fail) {
  *  Mobile Only api
  */
 UMP.prototype.switchAccount = function (account, success, fail) {
-    return getPromisedCordovaExec(success, fail, "LoginPlugin", "switchAccount", [account]);
+    cordova.exec(success, fail, "LoginPlugin", "switchAccount", [account]);
 };
 /**
  * deleteAccount - Delete given Account
@@ -296,7 +259,7 @@ UMP.prototype.switchAccount = function (account, success, fail) {
  * Mobile Only api
  */
 UMP.prototype.deleteAccount = function (account, success, fail) {
-    return getPromisedCordovaExec(success, fail, "LoginPlugin", "deleteAccount", [account]);
+    cordova.exec(success, fail, "LoginPlugin", "deleteAccount", [account]);
 };
 
 
@@ -305,44 +268,44 @@ UMP.prototype.deleteAccount = function (account, success, fail) {
  * getInfoMessages - Get list of InfoMessages
  */
 UMP.prototype.getInfoMessages = function (headerName, lid, success, fail) {
-    return getPromisedCordovaExec(success, fail, "SettingsPlugin", "getInfoMessages", [{ 'headerName': headerName, 'LID': lid }]);
+    cordova.exec(success, fail, "SettingsPlugin", "getInfoMessages", [{ 'headerName': headerName, 'LID': lid }]);
 };
 /**
  * userSettings - Get current User information
  * @param {function} callback
  */
 UMP.prototype.userSettings = function (success, fail) {
-    return getPromisedCordovaExec(success, fail, "SettingsPlugin", "userSettings", []);
+    cordova.exec(success, fail, "SettingsPlugin", "userSettings", []);
 };
 /**
  * updateSystemCredentials - Save System Credentials
  */
 UMP.prototype.updateSystemCredentials = function (credentials, success, fail) {
-    return getPromisedCordovaExec(success, fail, "SettingsPlugin", "updateSystemCredentials", credentials);
+    cordova.exec(success, fail, "SettingsPlugin", "updateSystemCredentials", credentials);
 };
 /**
  * getSystemCredentials - Get all System Credentials
  */
 UMP.prototype.getSystemCredentials = function (success, fail) {
-    return getPromisedCordovaExec(success, fail, "SettingsPlugin", "getSystemCredentials", []);
+    cordova.exec(success, fail, "SettingsPlugin", "getSystemCredentials", []);
 };
 /**
 *  Get Version Infrmation
 */
 UMP.prototype.getVersionNumbers = function (success, fail) {
-    return getPromisedCordovaExec(success, fail, "SettingsPlugin", "getVersionNumbers", []);
+    cordova.exec(success, fail, "SettingsPlugin", "getVersionNumbers", []);
 };
 /**
  * clearData - clear application databases and files
  */
 UMP.prototype.clearData = function (success, fail) {
-    return getPromisedCordovaExec(success, fail, "SettingsPlugin", "clearData", []);
+    cordova.exec(success, fail, "SettingsPlugin", "clearData", []);
 };
 /**
  * Check for Internet connection
  */
 UMP.prototype.hasInternet = function (success, fail) {
-    return getPromisedCordovaExec(success, fail, "SettingsPlugin", "hasInternet", []);
+    cordova.exec(success, fail, "SettingsPlugin", "hasInternet", []);
 };
 
 /**
@@ -351,7 +314,7 @@ UMP.prototype.hasInternet = function (success, fail) {
  * @param {function} callback - (Optional) user supplied async callback / error handler
  */
 UMP.prototype.pullDb = function (success, fail) { // REMOVE
-    return getPromisedCordovaExec(success, fail, "DatabasePlugin", "pullDb", []);
+    cordova.exec(success, fail, "DatabasePlugin", "pullDb", []);
 };
 /**
  * pushDB - push updated database file from "temp" folder to application directory for development purpose only
@@ -359,14 +322,14 @@ UMP.prototype.pullDb = function (success, fail) { // REMOVE
  * @param {function} callback - (Optional) user supplied async callback / error handler
  */
 UMP.prototype.pushDB = function (success, fail) { // REMOVE
-    return getPromisedCordovaExec(success, fail, "DatabasePlugin", "pushDb", []);
+    cordova.exec(success, fail, "DatabasePlugin", "pushDb", []);
 };
 /**
  * encrypt - Get encrypted string
  * @param {function} callback
  */
 UMP.prototype.encrypt = function (input, success, fail) {
-    return getPromisedCordovaExec(success, fail, "DatabasePlugin", "encrypt", [input]);
+    cordova.exec(success, fail, "DatabasePlugin", "encrypt", [input]);
 };
 /**
  * Guid
@@ -395,7 +358,7 @@ UMP.prototype.dbSelect = function (tableName, whereClause, success, fail) {
     if (whereClause && whereClause !== null && whereClause !== "") {
         query.whereClause = whereClause;
     }
-    return getPromisedCordovaExec(success, fail, "DatabasePlugin", "select", [query]);
+    cordova.exec(success, fail, "DatabasePlugin", "select", [query]);
 };
 /**
  * insert - insert record into table
@@ -414,7 +377,7 @@ UMP.prototype.dbInsert = function (tableName, structureObject, isHeader, success
         "isHeader": isHeader,
         "fields": structureObject
     };
-    return getPromisedCordovaExec(success, fail, "DatabasePlugin", "insert", [query]);
+    cordova.exec(success, fail, "DatabasePlugin", "insert", [query]);
 };
 /**
  * insertOrUpdate - insert record or update record if exists into table
@@ -433,7 +396,7 @@ UMP.prototype.dbInsertOrUpdate = function (tableName, structureObject, isHeader,
         "isHeader": isHeader,
         "fields": structureObject
     };
-    return getPromisedCordovaExec(success, fail, "DatabasePlugin", "insertOrUpdate", [query]);
+    cordova.exec(success, fail, "DatabasePlugin", "insertOrUpdate", [query]);
 };
 /**
  * deleteRecord - delete record entry from table
@@ -458,7 +421,7 @@ UMP.prototype.dbDelete = function (tableName, whereClause, success, fail) {
             "whereClause": whereClause
         };
     }
-    return getPromisedCordovaExec(success, fail, "DatabasePlugin", "deleteRecord", [query]);
+    cordova.exec(success, fail, "DatabasePlugin", "deleteRecord", [query]);
 };
 /**
  * update - update existing record entry in table
@@ -477,7 +440,7 @@ UMP.prototype.dbUpdate = function (tableName, updatedObject, whereClause, succes
         "fields": updatedObject,
         "whereClause": whereClause
     };
-    return getPromisedCordovaExec(success, fail, "DatabasePlugin", "update", [query]);
+    cordova.exec(success, fail, "DatabasePlugin", "update", [query]);
 };
 /**
  * executeStatement - execure raw query
@@ -490,37 +453,37 @@ UMP.prototype.dbUpdate = function (tableName, updatedObject, whereClause, succes
  * Mobile Only api
  */
 UMP.prototype.dbExecuteStatement = function (query, success, fail) {
-    return getPromisedCordovaExec(success, fail, "DatabasePlugin", "executeQuery", [query]);
+    cordova.exec(success, fail, "DatabasePlugin", "executeQuery", [query]);
 };
 /**
     * createSavePoint - create a save point for db transaction
     */
 UMP.prototype.dbCreateSavePoint = function (savePoint) { 
-    return getPromisedCordovaExec(null, null, "DatabasePlugin", "createSavePoint", [savePoint]);
+    cordova.exec(null, null, "DatabasePlugin", "createSavePoint", [savePoint]);
 };
 /**
     * releaseSavePoint - release a save point for db transaction
     */
 UMP.prototype.dbReleaseSavePoint = function (savePoint) {
-    return getPromisedCordovaExec(null, null, "DatabasePlugin", "releaseSavePoint", [savePoint]);
+    cordova.exec(null, null, "DatabasePlugin", "releaseSavePoint", [savePoint]);
 };
 /**
     * rollbackSavePoint - rollback a save point for db transaction
     */
 UMP.prototype.dbRollbackToSavePoint = function (savePoint) {
-    return getPromisedCordovaExec(null, null, "DatabasePlugin", "rollbackToSavePoint", [savePoint]);
+    cordova.exec(null, null, "DatabasePlugin", "rollbackToSavePoint", [savePoint]);
 };
 /**
     * beginTransaction - Begin a db transaction
     */
 UMP.prototype.dbBeginTransaction = function () {
-    return getPromisedCordovaExec(null, null, "DatabasePlugin", "beginTransaction", []);
+    cordova.exec(null, null, "DatabasePlugin", "beginTransaction", []);
 };
 /**
     * endTransaction - End a db transaction
     */
 UMP.prototype.dbEndTransaction = function () {
-    return getPromisedCordovaExec(null, null, "DatabasePlugin", "endTransaction", []);
+    cordova.exec(null, null, "DatabasePlugin", "endTransaction", []);
 };
 
 /**
@@ -529,7 +492,7 @@ UMP.prototype.dbEndTransaction = function () {
  * @param callback (Optional) user supplied async callback / error handler
  */
 UMP.prototype.launchFile = function (filePath, success, fail) {
-    return getPromisedCordovaExec(success, fail, "ProxyPlugin", "launchFile", [filePath]);
+    cordova.exec(success, fail, "ProxyPlugin", "launchFile", [filePath]);
 };
 /**
  * launchBase64 - Save Base64 string in a file and luanch the file in deafult system application
@@ -541,7 +504,7 @@ UMP.prototype.launchFile = function (filePath, success, fail) {
 UMP.prototype.launchBase64 = function (base64String, fileName, extension, success, fail) {
     fileName = helper.isEmpty(fileName) ? "Temp" : fileName;
     extension = helper.isEmpty(extension) ? ".pdf" : extension;
-    return getPromisedCordovaExec(success, fail, "ProxyPlugin", "launchBase64", [{ 'base64': base64String, 'fileName': fileName, 'extension': extension }]);
+    cordova.exec(success, fail, "ProxyPlugin", "launchBase64", [{ 'base64': base64String, 'fileName': fileName, 'extension': extension }]);
 };
 /**
  * unzip - Unzip source file to destination path
@@ -550,7 +513,7 @@ UMP.prototype.launchBase64 = function (base64String, fileName, extension, succes
  * @param callback (Optional) user supplied async callback / error handler
  */
 UMP.prototype.unzip = function (srcPath, destPath, success, fail) {
-    return getPromisedCordovaExec(success, fail, "ProxyPlugin", "unzip", [{ 'srcPath': srcPath, 'destPath': destPath }]);
+    cordova.exec(success, fail, "ProxyPlugin", "unzip", [{ 'srcPath': srcPath, 'destPath': destPath }]);
 };
 
 
@@ -559,7 +522,7 @@ UMP.prototype.unzip = function (srcPath, destPath, success, fail) {
  * Required to get complete attachment file path in iOS. cancatenate this path with file name to get complete file path
  */
 UMP.prototype.getAttachmentFolderPath = function (success, fail) {
-    return getPromisedCordovaExec(success, fail, "AttachmentPlugin", "getAttachmentFolderPath", []);
+    cordova.exec(success, fail, "AttachmentPlugin", "getAttachmentFolderPath", []);
 };
 /**
  * createAttachmentItem - Copy attachment file to application folder and insert attachment itme to databade with updated local path
@@ -573,7 +536,7 @@ UMP.prototype.createAttachmentItem = function (tableName, structureObject, succe
         "tableName": tableName,
         "fields": structureObject
     };
-    return getPromisedCordovaExec(success, fail, "AttachmentPlugin", "createAttachmentItem", [query]);
+    cordova.exec(success, fail, "AttachmentPlugin", "createAttachmentItem", [query]);
 };
 /**
  * uploadAttachment - Upload attachment
@@ -590,7 +553,7 @@ UMP.prototype.uploadAttachment = function (tableName, structureObject, isAsync, 
         "fields": structureObject,
         "isAsync": isAsync
     };
-    return getPromisedCordovaExec(success, fail, "AttachmentPlugin", "uploadAttachment", [param]);
+    cordova.exec(success, fail, "AttachmentPlugin", "uploadAttachment", [param]);
 };
 /**
  * downloadAttachment - Download attachment
@@ -604,7 +567,7 @@ UMP.prototype.downloadAttachment = function (tableName, structureObject, success
         "tableName": tableName,
         "fields": structureObject
     };
-    return getPromisedCordovaExec(success, fail, "AttachmentPlugin", "downloadAttachment", [param]);
+    cordova.exec(success, fail, "AttachmentPlugin", "downloadAttachment", [param]);
 };
 
 
@@ -629,7 +592,7 @@ UMP.prototype.syncForeground = function (reqype, header, customData, paFunction,
         "autoSave": autoSave,
         "paFunction": paFunction
     };
-    return getPromisedCordovaExec(success, fail, "SyncEnginePlugin", "submitInSync", [param]);
+    cordova.exec(success, fail, "SyncEnginePlugin", "submitInSync", [param]);
 };
 /*
     * submitDataInASync - submit data to ump server in async mode. Application will be notified through register NotificationListener callback.
@@ -655,7 +618,7 @@ UMP.prototype.syncBackground = function (reqype, header, customData, paFunction,
         "belid": belid,
         "bypassAttachment": bypassAttachment
     };
-    return getPromisedCordovaExec(success, fail, "SyncEnginePlugin", "submitInASync", [query]);
+    cordova.exec(success, fail, "SyncEnginePlugin", "submitInASync", [query]);
 };
 /**
  * getMessages - Request for downloading messages in ready state from server and will be notified through Notification Listener
@@ -665,7 +628,7 @@ UMP.prototype.syncBackground = function (reqype, header, customData, paFunction,
  * Mobile Only api
  */
 UMP.prototype.getMessages = function () {
-    return getPromisedCordovaExec(null, null, "SyncEnginePlugin", "getMessages", []);
+    cordova.exec(null, null, "SyncEnginePlugin", "getMessages", []);
 };
 /**
  * registerNotificationListener - Register for callback on GetMessage status
@@ -675,7 +638,7 @@ UMP.prototype.getMessages = function () {
  * Mobile Only api
  */
 UMP.prototype.registerNotifListener = function (success, fail) {
-    return getPromisedCordovaExec(success, fail, "SyncEnginePlugin", "registerNotifListener", []);
+    cordova.exec(success, fail, "SyncEnginePlugin", "registerNotifListener", []);
 };
 /**
  * unRegisterNotificationListener - UnRegister for callback on GetMessage status
@@ -685,7 +648,7 @@ UMP.prototype.registerNotifListener = function (success, fail) {
  * Mobile Only api
  */
 UMP.prototype.unRegisterNotifListener = function () {
-    return getPromisedCordovaExec(null, null, "SyncEnginePlugin", "unRegisterNotifListener", []);
+    cordova.exec(null, null, "SyncEnginePlugin", "unRegisterNotifListener", []);
 };
 /**
  * isInOutbox - Check whether BE is already in OutBox or not.
@@ -695,7 +658,7 @@ UMP.prototype.unRegisterNotifListener = function () {
  * returns true/false
  */
 UMP.prototype.isInOutBox = function (beLid, success, fail) {
-    return getPromisedCordovaExec(success, fail, "SyncEnginePlugin", "isInOutBox", [beLid]);
+    cordova.exec(success, fail, "SyncEnginePlugin", "isInOutBox", [beLid]);
 };
 /**
  * outBoxItemCount - Get count of items in OutBox
@@ -703,7 +666,7 @@ UMP.prototype.isInOutBox = function (beLid, success, fail) {
  * returns count
  */
 UMP.prototype.outBoxItemCount = function (success, fail) {
-    return getPromisedCordovaExec(success, fail, "SyncEnginePlugin", "outBoxItemCount", []);
+    cordova.exec(success, fail, "SyncEnginePlugin", "outBoxItemCount", []);
 };
 /**
  * isInSentItem - Check whether BE is already in SentItem or not.
@@ -713,7 +676,7 @@ UMP.prototype.outBoxItemCount = function (success, fail) {
  * returns true/false
  */
 UMP.prototype.isInSentItem = function (beLid, success, fail) {
-    return getPromisedCordovaExec(success, fail, "SyncEnginePlugin", "isInSentItem", [beLid]);
+    cordova.exec(success, fail, "SyncEnginePlugin", "isInSentItem", [beLid]);
 };
 /**
 * sentItemCount - Get count of items in Sentitem
@@ -721,7 +684,7 @@ UMP.prototype.isInSentItem = function (beLid, success, fail) {
 * returns count
 */
 UMP.prototype.sentItemCount = function (success, fail) {
-    return getPromisedCordovaExec(success, fail, "SyncEnginePlugin", "sentItemCount", []);
+    cordova.exec(success, fail, "SyncEnginePlugin", "sentItemCount", []);
 };
 /**
 * inBoxItemCount - Get count of items in InBox
@@ -729,7 +692,7 @@ UMP.prototype.sentItemCount = function (success, fail) {
 * returns count
 */
 UMP.prototype.inBoxItemCount = function (success, fail) {
-    return getPromisedCordovaExec(success, fail, "SyncEnginePlugin", "inBoxItemCount", []);
+    cordova.exec(success, fail, "SyncEnginePlugin", "inBoxItemCount", []);
 };
 /**
 * deleteOutBoxEntry - Delete BE from OutBox.
@@ -739,13 +702,13 @@ UMP.prototype.inBoxItemCount = function (success, fail) {
 * returns true/false
 */
 UMP.prototype.deleteOutBoxEntry = function (beLid, success, fail) {
-    return getPromisedCordovaExec(success, fail, "SyncEnginePlugin", "deleteOutBoxEntry", [beLid]);
+    cordova.exec(success, fail, "SyncEnginePlugin", "deleteOutBoxEntry", [beLid]);
 };
 /**
 * resetApplicationSyncData - Reset application Sync related data(OutObject,SentItemObject,InObject,AttachmentOutObject,AttachmentQObject,Attachment folder).
 */
 UMP.prototype.resetApplicationSyncData = function (success, fail) {
-    return getPromisedCordovaExec(success, fail, "SyncEnginePlugin", "resetApplicationSyncData", []);
+    cordova.exec(success, fail, "SyncEnginePlugin", "resetApplicationSyncData", []);
 };
 UMP.prototype.requestType = requestType;
 
