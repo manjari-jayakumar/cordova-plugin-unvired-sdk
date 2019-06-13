@@ -204,7 +204,11 @@ UMP.prototype.logout = function (success, fail) {
  *
  *  @param {function} callback - (Optional) user supplied async callback / error handler
  */
-UMP.prototype.authenticateAndActivate = function (success, fail) {
+UMP.prototype.authenticateAndActivate = function (loginParameters, success, fail) {
+    /* Add to the existing Login Parameters */
+    
+    for(var k in loginParameters) parameters[k] = loginParameters[k];
+    
     if (!helper.validateLoginParameters(loginMode.authActivate, fail))
         return;
         
@@ -224,7 +228,10 @@ UMP.prototype.authenticateAndActivate = function (success, fail) {
  *
  *  Mobile Only api
  */
-UMP.prototype.authenticateLocal = function (success, fail) {
+UMP.prototype.authenticateLocal = function (loginParameters, success, fail) {
+    /* Add to the existing Login Parameters */
+    for(var k in loginParameters) parameters[k] = loginParameters[k];
+
     if (!helper.validateLoginParameters(loginMode.authLocal, fail))
         return;
     cordova.exec(success, fail, "LoginPlugin", "authenticateLocal", [parameters]);
@@ -586,13 +593,13 @@ UMP.prototype.downloadAttachment = function (tableName, structureObject, success
  */
 UMP.prototype.syncForeground = function (reqype, header, customData, paFunction, autoSave, success, fail) {
     var query = {
-        "requestType": requestType[reqype],
+        "requestType": reqype,
         "header": header == null ? "" : header,
         "customData": customData == null ? "" : customData,
         "autoSave": autoSave,
         "paFunction": paFunction
     };
-    cordova.exec(success, fail, "SyncEnginePlugin", "submitInSync", [param]);
+    cordova.exec(success, fail, "SyncEnginePlugin", "submitInSync", [query]);
 };
 /*
     * submitDataInASync - submit data to ump server in async mode. Application will be notified through register NotificationListener callback.
@@ -610,7 +617,7 @@ UMP.prototype.syncForeground = function (reqype, header, customData, paFunction,
     */
 UMP.prototype.syncBackground = function (reqype, header, customData, paFunction, beName, belid, bypassAttachment, success, fail) {
     var query = {
-        "requestType": requestType[reqype],
+        "requestType": reqype,
         "header": header == null ? "" : header,
         "customData": customData == null ? "" : customData,
         "paFunction": paFunction,
