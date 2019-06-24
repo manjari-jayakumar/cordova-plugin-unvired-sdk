@@ -2,11 +2,11 @@
 var exec = require('cordova/exec');
 var parameters;
 
-var UMP = function() {
+var UMP = function () {
 };
 
-var helper = function() {
-    
+var helper = function () {
+
 }
 
 var loginListenerType = {
@@ -29,7 +29,7 @@ var loginType = {
 /**
  *  loginMode is used to check for specific parameters for different mode 
  */
-var loginMode  = {
+var loginMode = {
     authActivate: 0,
     authLocal: 1,
     forgotPassword: 2
@@ -37,7 +37,7 @@ var loginMode  = {
 /**
  * result type in returned callbackResult
  */
-var resultType =  {
+var resultType = {
     success: 0,
     error: 1
 }
@@ -108,28 +108,6 @@ var restApis = {
     execute: '/execute/',
     users: '/UMP/API/v2/users/'
 };
-
-/* NOT REQUIRED. SINCE LOGIN PARAMETERS IS DEFINED AS A NEW CLASS IN IONIC WRAPPER.
-var loginParameters = {
-    appName: "",
-    company: "",
-    username: "",
-    password: "",
-    url: "",
-    domain: "",
-    loginType: "UNVIRED_ID",
-    feUserId: "",
-    port: "",
-    //Default metadata path is root where index.html is
-    metadataPath: "",
-    //Setting this flag will populate TAG1 field with attachment base64 string
-    isRequiredAttachmentBase64: false,
-    //Set time to run Outbox in interval of given minutes. Timer will start/stop only when there are items in Outbox. 
-    autoSendTime: "0",
-    //Set time to run SentItem in interval of given minutes. Timer will start/stop only when there are items in SentItem. 
-    autoSyncTime: "0"
-}
-*/
 
 UMP.prototype.logDebug = function (sourceClass, method, message) {
     cordova.exec(null, null, "LoggerPlugin", "logDebug", [{
@@ -206,12 +184,12 @@ UMP.prototype.logout = function (success, fail) {
  */
 UMP.prototype.authenticateAndActivate = function (loginParameters, success, fail) {
     /* Add to the existing Login Parameters */
-    
-    for(var k in loginParameters) parameters[k] = loginParameters[k];
-    
+
+    for (var k in loginParameters) parameters[k] = loginParameters[k];
+
     if (!helper.validateLoginParameters(loginMode.authActivate, fail))
         return;
-        
+
     cordova.exec(success, fail, "LoginPlugin", "authenticateAndActivate", [parameters]);
 };
 /**
@@ -230,7 +208,7 @@ UMP.prototype.authenticateAndActivate = function (loginParameters, success, fail
  */
 UMP.prototype.authenticateLocal = function (loginParameters, success, fail) {
     /* Add to the existing Login Parameters */
-    for(var k in loginParameters) parameters[k] = loginParameters[k];
+    for (var k in loginParameters) parameters[k] = loginParameters[k];
 
     if (!helper.validateLoginParameters(loginMode.authLocal, fail))
         return;
@@ -465,7 +443,7 @@ UMP.prototype.dbExecuteStatement = function (query, success, fail) {
 /**
     * createSavePoint - create a save point for db transaction
     */
-UMP.prototype.dbCreateSavePoint = function (savePoint) { 
+UMP.prototype.dbCreateSavePoint = function (savePoint) {
     cordova.exec(null, null, "DatabasePlugin", "createSavePoint", [savePoint]);
 };
 /**
@@ -780,11 +758,448 @@ helper.guid = function () {
     return s4() + s4() + '-' + s4() + '-' + s4() + '-' +
         s4() + '-' + s4() + s4() + s4();
 };
+
+/**
+* Clear loki databases
+*/
+helper.clearLokiDbs = function () {
+    localStorage.removeItem("APP_LOKI_DB");
+    localStorage.removeItem("FW_LOKI_DB");
+    localStorage.removeItem(login.parameters.appName);
+    webDb.appDb = null;
+    webDb.fwDb = null;
+};
+
 helper.sendError = function (msg, callback) {
     var cbResult = {};
     cbResult.type = resultType.error;
     cbResult.error = msg;
     callback(cbResult);
 };
+
+/**
+ * restUtil - Provides apis to make rest api call.
+ *
+ * Internal use only module
+ */
+var restUtil = /** @class */ (function () {
+    function restUtil() {
+    }
+    /**
+     * Rest Api call
+     * TODO : Remove JQuery dependency for ajax call
+     */
+    restUtil.performRequest = function (endpoint, msg, callback, httpType) {
+        var headers = {
+            'Accept': 'application/json',
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'Authorization': restUtil.appMeta.authorization
+        };
+        var postData = {
+            frontendUser: restUtil.appMeta.frontEnd,
+            messageFormat: 'standard',
+            inputMessage: JSON.stringify(msg),
+            /**
+             * Parameters require for sending SAP port name/ password in initial auth call
+             * Clear this on success callback. Henceforth use authkey for subcsequent calls
+             */
+            credentials: restUtil.appMeta.credentials
+        };
+        var methodType = httpType ? httpType : "POST";
+        $.ajax({
+            type: methodType,
+            url: endpoint,
+            data: postData,
+            success: function (res) {
+                restUtil.hanldeRestApiCallback(true, res, callback);
+            },
+            error: function (res) {
+                restUtil.hanldeRestApiCallback(false, res, callback);
+            },
+            headers: headers,
+            dataType: 'json'
+        });
+    };
+    restUtil.hanldeRestApiCallback = function (isSuccess, result, callback) {
+        var cbResult = {};
+        if (isSuccess) {
+            cbResult.type = resultType.success;
+            cbResult.message = (result && result.message) ? result.message : "";
+            cbResult.data = result;
+        }
+        else {
+            cbResult.type = resultType.error;
+            cbResult.error = (result && result.responseText) ? result.responseText : "";
+            cbResult.message = (result && result.message) ? result.message : "";
+        }
+        callback(cbResult);
+    };
+    restUtil.removeLokiMeta = function (postMessage) {
+        function traverse(o) {
+            for (var i in o) {
+                if (!!o[i] && typeof (o[i]) == "object") {
+                    // console.log(i, o[i])
+                    delete o["$loki"];
+                    delete o["meta"];
+                    //if(i === "$loki" || i === "meta") delete o[i];
+                    traverse(o[i]);
+                }
+            }
+        }
+        if (postMessage != "") {
+            postMessage = JSON.parse(JSON.stringify(postMessage));
+        }
+        traverse(postMessage);
+        return postMessage;
+    };
+    restUtil.appMeta = {};
+    restUtil.httpType = {
+        get: "GET",
+        post: "POST",
+        del: "DELETE"
+    };
+    return restUtil;
+}());
+;
+/**
+ * loki - inmemory js librabry required for persisting data on web
+ * appDb - host application data
+ * fwDb - host framework data
+ * webDb - Internal use only module
+ */
+var webDb = /** @class */ (function () {
+    function webDb() {
+    }
+    webDb.initialize = function () {
+        var appDbName = helper.isEmpty(login.parameters.appName) ? "APP_LOKI_DB" : login.parameters.appName;
+        if (webDb.appDb == null) {
+            var idbAdapter = new LokiIndexedAdapter();
+            webDb.appDb = new loki(appDbName, { adapter: idbAdapter, autoload: true });
+            webDb.appDb.loadDatabase({});
+            webDb.appDb.saveDatabase();
+        }
+        if (webDb.fwDb == null) {
+            webDb.fwDb = new loki('FW_LOKI_DB');
+            webDb.fwDb.loadDatabase({});
+            webDb.fwDb.saveDatabase();
+        }
+    };
+    webDb.reload = function () {
+        var appDbName = helper.isEmpty(login.parameters.appName) ? "APP_LOKI_DB" : login.parameters.appName;
+        if (webDb.appDb == null) {
+            webDb.appDb = new loki(appDbName);
+            webDb.appDb.loadDatabase(JSON.parse(localStorage[appDbName]));
+            webDb.appDb.saveDatabase();
+        }
+        if (webDb.fwDb == null) {
+            webDb.fwDb = new loki('FW_LOKI_DB');
+            webDb.fwDb.loadDatabase(JSON.parse(localStorage['FW_LOKI_DB']));
+            webDb.fwDb.saveDatabase();
+        }
+    };
+    /**
+     *  insert or update based on gids
+     */
+    webDb.insert = function (name, structure, isFw) {
+        var db = (isFw) ? webDb.fwDb : webDb.appDb;
+        var headerInCollection = db.getCollection(name);
+        if (headerInCollection == null) {
+            headerInCollection = db.addCollection(name);
+        }
+        var structureInDB = null;
+        if (!isFw) {
+            structureInDB = webDb.getBasedOnGid(name, structure);
+        }
+        if (structureInDB == null) {
+            //Create LID field if missing
+            if (helper.isEmpty(structure["LID"])) {
+                structure["LID"] = helper.guid();
+            }
+            headerInCollection.insert(structure);
+        }
+        else {
+            structure = helper.copyProperty(structure, structureInDB);
+            headerInCollection.update(structure);
+        }
+        db.saveDatabase();
+    };
+    webDb.select = function (name, whereClause, isFw) {
+        var db = (isFw) ? webDb.fwDb : webDb.appDb;
+        var headerInCollection = db.getCollection(name);
+        if (headerInCollection === null)
+            return [];
+        if (!helper.isEmpty(whereClause)) {
+            return headerInCollection.findObjects(whereClause);
+        }
+        return headerInCollection.data;
+    };
+    //Cascade delete
+    webDb.deleteCascade = function (tableName, structure, isFw) {
+        var db = (isFw) ? webDb.fwDb : webDb.appDb;
+        var structureInDB = webDb.getBasedOnGid(tableName, structure);
+        if (structureInDB && (structureInDB != null)) {
+            var children = helper.getBeChildrenNames(tableName);
+            if ((children != null) && (children.length > 0)) {
+                for (var i = 0; i < children.length; i++) {
+                    var childrenCollection = db.getCollection(children[i]["name"]);
+                    if (childrenCollection != null) {
+                        childrenCollection.removeWhere({ 'FID': structureInDB.LID });
+                    }
+                }
+            }
+            var parentCollection = db.getCollection(tableName);
+            if (parentCollection != null) {
+                parentCollection.removeWhere({ 'LID': structureInDB.LID });
+            }
+        }
+        db.saveDatabase();
+    };
+    webDb.getCollection = function (tableName) {
+        return webDb.appDb.getCollection(name);
+    };
+    webDb.saveAppMeta = function (appMeta) {
+        webDb.insert("appMeta", appMeta, true);
+    };
+    webDb.getAppMeta = function () {
+        var appMeta = webDb.select("appMeta", "", true);
+        if (appMeta != null && appMeta.length > 0)
+            return appMeta[0];
+        return null;
+    };
+    /**
+     * Considering structure name is unique.(Not handling same structure across multiple BusinessEntity)
+     */
+    webDb.getBasedOnGid = function (name, structure) {
+        if (helper.isEmpty(name))
+            return null;
+        var gids = metadata.fMeta.filter(function (e) {
+            return e.sName === name && e.isGid === true;
+        });
+        if (gids == null || gids.length <= 0)
+            return null;
+        var qry = {};
+        gids.forEach(function (g) {
+            qry[g.name] = structure[g.name];
+        });
+        var headerInCollection = webDb.appDb.getCollection(name);
+        if (headerInCollection === null)
+            return null;
+        return headerInCollection.findObject(qry);
+    };
+    webDb.reCreateAppDb = function () {
+        var appDbName = helper.isEmpty(login.parameters.appName) ? "APP_LOKI_DB" : login.parameters.appName;
+        localStorage.removeItem("APP_LOKI_DB");
+        localStorage.removeItem(login.parameters.appName);
+        var idbAdapter = new LokiIndexedAdapter();
+        webDb.appDb = new loki(appDbName, { adapter: idbAdapter, autoload: true });
+        webDb.appDb.loadDatabase({});
+        webDb.appDb.saveDatabase();
+    };
+    webDb.appDb = null;
+    webDb.fwDb = null;
+    return webDb;
+}());
+;
+/**
+ * Parse and save data
+ *
+ * Internal use only module
+ */
+var parser = /** @class */ (function () {
+    function parser() {
+    }
+    parser.parseServerResponse = function (data, reqype) {
+        var cbResult = {};
+        cbResult.type = resultType.success;
+        cbResult.data = data;
+        cbResult.message = "";
+        //Get InfoMessage
+        if (data.hasOwnProperty("InfoMessage")) {
+            var infoArr = data["InfoMessage"];
+            infoArr.forEach(function (element) {
+                helper.saveInfoMessage(element);
+                cbResult.message = cbResult.message + " " + element.message;
+                if (element.category === "FAILURE") {
+                    cbResult.type = resultType.error;
+                }
+            });
+        }
+        for (var property in data) {
+            if (property === "InfoMessage") {
+                continue;
+            }
+            else {
+                var beArr = data[property];
+                //Clear BE for PULL request.
+                if (reqype == ump.requestType.PULL) {
+                    var children = helper.getBeTableNames(property);
+                    if ((children != null) && (children.length > 0)) {
+                        for (var i = 0; i < children.length; i++) {
+                            var childrenCollection = webDb.appDb.getCollection(children[i]["name"]);
+                            if (childrenCollection != null) {
+                                childrenCollection.clear();
+                            }
+                        }
+                        // webDb.appDb.saveDatabase();
+                    }
+                }
+                beArr.forEach(function (element) {
+                    parser.handleEachBE(element, reqype, property);
+                });
+            }
+        }
+        webDb.appDb.saveDatabase();
+        return cbResult;
+    };
+    parser.handleEachBE = function (be, reqype, beName) {
+        var headerLid = "";
+        var isActionDelete = false;
+        for (var property in be) {
+            if (be.hasOwnProperty(property)) {
+                var value = be[property];
+                //Item
+                if (value.constructor === Array) {
+                    value.forEach(function (item) {
+                        item["FID"] = headerLid;
+                        //webDb.insert(property, item);
+                        var structureInDB = webDb.getBasedOnGid(property, item);
+                        var itemInCollection = webDb.appDb.getCollection(property);
+                        if (itemInCollection === null) {
+                            itemInCollection = webDb.appDb.addCollection(property);
+                        }
+                        if (structureInDB == null) {
+                            item.FID = headerLid;
+                            itemInCollection.insert(item);
+                        }
+                        else {
+                            item = helper.copyProperty(item, structureInDB);
+                            itemInCollection.update(item);
+                        }
+                        //  webDb.appDb.saveDatabase();
+                    });
+                    //Header    
+                }
+                else if (value.constructor === Object) {
+                    value["LID"] = helper.guid();
+                    headerLid = value.LID;
+                    //Handle action delete
+                    if (isActionDelete) {
+                        webDb.deleteCascade(property, value);
+                        continue;
+                    }
+                    var structureInDB = webDb.getBasedOnGid(property, value);
+                    //In browser delete all items if header exists.
+                    if (reqype === ump.requestType.RQST) {
+                        if (structureInDB && (structureInDB != null)) {
+                            var children = helper.getBeChildrenNames(property);
+                            if ((children != null) && (children.length > 0)) {
+                                for (var i = 0; i < children.length; i++) {
+                                    var childCollection = webDb.appDb.getCollection(children[i]["name"]);
+                                    if (childCollection != null) {
+                                        childCollection.removeWhere({ 'FID': structureInDB.LID });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    var headerInCollection = webDb.appDb.getCollection(property);
+                    if (headerInCollection === null) {
+                        headerInCollection = webDb.appDb.addCollection(property);
+                    }
+                    if (structureInDB == null) {
+                        value.LID = helper.guid();
+                        headerInCollection.insert(value);
+                    }
+                    else {
+                        value = helper.copyProperty(value, structureInDB);
+                        headerInCollection.update(value);
+                    }
+                    headerLid = value.LID;
+                    // webDb.appDb.saveDatabase();
+                    //Handle Action D - Delete Header and children
+                }
+                else {
+                    isActionDelete = "D" == value;
+                }
+            }
+        }
+    };
+    return parser;
+}());
+/**
+ * metadataParser - parse metadata.json, create BusinessEntityMeta, StructureMeta and FieldMeta and save.
+ *
+ * Intenal use only module
+ */
+var metadataParser = /** @class */ (function () {
+    function metadataParser() {
+    }
+    metadataParser.initialize = function () {
+        // TODO :  Check file existance
+        metadataParser.loadJSON(metadataParser.parse);
+    };
+    /**
+     * Load metadata.json from same directory where kernel-mobiweb.js
+     */
+    metadataParser.loadJSON = function (callback) {
+        var xobj = new XMLHttpRequest();
+        xobj.overrideMimeType("application/json");
+        var metadataPath = helper.isEmpty(parameters.metadataPath) ? "metadata.json" : parameters.metadataPath;
+        xobj.open('GET', metadataPath, true);
+        xobj.onreadystatechange = function () {
+            if (xobj.readyState == 4 && xobj.status == 200) {
+                callback(xobj.responseText);
+            }
+        };
+        xobj.send(null);
+    };
+    metadataParser.parse = function (json) {
+        if (helper.isEmpty(json))
+            return;
+        var data = JSON.parse(json);
+        for (var property in data) {
+            if (data.hasOwnProperty(property)) {
+                var value = data[property];
+                if (value.constructor === Object) {
+                    metadataParser.parseEachBE(value, property);
+                }
+            }
+        }
+    };
+    metadataParser.parseEachBE = function (be, name) {
+        var beMeta = {};
+        beMeta.attachment = helper.isEmpty(be.attachments) ? false : be.attachments;
+        beMeta.onConflict = helper.isEmpty(be.onConflict) ? conflictRule.SERVER_WINS : be.onConflict;
+        beMeta.save = helper.isEmpty(be.save) ? true : be.save;
+        beMeta.name = name;
+        metadata.bMeta.push(beMeta);
+        for (var property in be) {
+            if (be.hasOwnProperty(property)) {
+                var value = be[property];
+                if (value.constructor === Object) {
+                    var sMeta = {};
+                    sMeta.beName = beMeta.name;
+                    sMeta.isheader = ((property.indexOf("_HEADER") > -1) || (property.indexOf("_HDR") > -1)) ? true : false;
+                    sMeta.name = property;
+                    metadata.sMeta.push(sMeta);
+                    var fields = value.field;
+                    if (fields != null && fields.length > 0) {
+                        fields.forEach(function (f) {
+                            var fMeta = {};
+                            fMeta.beName = beMeta.name;
+                            fMeta.sName = sMeta.name;
+                            fMeta.name = f.name;
+                            fMeta.isGid = f.isGid;
+                            fMeta.isMandatory = f.mandatory;
+                            fMeta.sqlType = f.sqlType;
+                            metadata.fMeta.push(fMeta);
+                        });
+                    }
+                }
+            }
+        }
+    };
+    return metadataParser;
+}());
 
 module.exports = new UMP();

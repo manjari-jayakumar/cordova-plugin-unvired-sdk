@@ -5,12 +5,13 @@
   "cordova": {
     "id": "cordova-plugin-unvired-sdk",
     "platforms": [
-      "ios"
+      "ios", "android"
     ]
   },
   "keywords": [
     "ecosystem:cordova",
-    "cordova-ios"
+    "cordova-ios", 
+    "cordova-android"
   ],
   "author": "Unvired Inc.",
   "license": "UNLICENSED",
@@ -18,6 +19,11 @@
     {
       "name": "Venkadesh P",
       "email": "venkadesh.p@unvired.com",
+      "url": "http://unvired.com"
+    },
+    {
+      "name": "Srinidhi Rao",
+      "email": "srinidhi.rao@unvired.com",
       "url": "http://unvired.com"
     },
     {

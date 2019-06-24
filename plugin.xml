@@ -1,9 +1,66 @@
 <?xml version='1.0' encoding='utf-8'?>
 <plugin id="cordova-plugin-unvired-sdk" version="0.0.1" xmlns="http://apache.org/cordova/ns/plugins/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
-    <name>UnviredSDK</name>
+<name>UnviredSDK</name>
     <js-module name="UnviredSDK" src="www/kernel.js">
         <clobbers target="ump" />
     </js-module>
+    
+    <platform name="browser">
+    <config-file target="config.xml" parent="/*">
+        <feature name="LoginPlugin">
+            <param name="browser-package" value="LoginPlugin" />
+        </feature>
+        <feature name="LoggerPlugin">
+            <param name="browser-package" value="LoggerPlugin" />
+        </feature>
+        <feature name="SyncEnginePlugin">
+            <param name="browser-package" value="SyncEnginePlugin" />
+        </feature>
+        <feature name="SettingsPlugin">
+            <param name="browser-package" value="SettingsPlugin" />
+        </feature>
+        <feature name="AttachmentPlugin">
+            <param name="browser-package" value="AttachmentPlugin" />
+        </feature>
+    </config-file>
+    <js-module src="src/browser/UnviredPluginProxy.js" name="UnviredPluginProxy">
+        <runs />
+    </js-module>
+    <js-module name="JQuery" src="src/browser/jquery-3.2.1.js">
+    </js-module>
+    <js-module name="Bootstrap" src="src/browser/bootstrap.min.js">
+    </js-module>
+    <js-module name="Loki-Indexed-Adapter" src="src/browser/loki-indexed-adapter.js">
+    </js-module>
+    <js-module name="LokiJS" src="src/browser/loki.js">
+    </js-module>
+    <js-module name="Tether" src="src/browser/tether.min.js">
+    </js-module>
+</platform>
+    <platform name="android">
+    <config-file target="res/xml/config.xml" parent="/*">
+        <feature name="DatabasePlugin">
+            <param name="android-package" value="com.unvired.plugin.AndroidDatabasePlugin" />
+        </feature>
+        <feature name="LoggerPlugin">
+            <param name="android-package" value="com.unvired.plugin.AndroidLoggerPlugin" />
+        </feature>
+        <feature name="SyncEnginePlugin">
+            <param name="android-package" value="com.unvired.plugin.AndroidSyncEnginePlugin" />
+        </feature>
+        <feature name="SettingsPlugin">
+            <param name="android-package" value="com.unvired.plugin.AndroidSettingsPlugin" />
+        </feature>
+        <feature name="LoginPlugin">
+            <param name="android-package" value="com.unvired.plugin.AndroidLoginPlugin" />
+        </feature>
+        <feature name="AttachmentPlugin">
+            <param name="android-package" value="com.unvired.plugin.AndroidAttachmentPlugin" />
+        </feature>
+    </config-file>
+    <!-- Unvired Cordova SDK Maven Link -->
+    <framework src="com.unvired:android-cordova-sdk:4.0.55" />
+    </platform>
     <platform name="ios">
         <config-file parent="/*" target="config.xml">
             <feature name="LoggerPlugin">
