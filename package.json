@@ -2,15 +2,18 @@
   "name": "cordova-plugin-unvired-sdk",
   "version": "0.0.1",
   "description": "Unvired Cordova Plugin",
+  "main": "gulpfile.js",
   "cordova": {
     "id": "cordova-plugin-unvired-sdk",
     "platforms": [
-      "ios", "android", "browser"
+      "ios",
+      "android",
+      "browser"
     ]
   },
   "keywords": [
     "ecosystem:cordova",
-    "cordova-ios", 
+    "cordova-ios",
     "cordova-android"
   ],
   "author": "Unvired Inc.",
@@ -36,5 +39,13 @@
       "email": "srini@unvired.com",
       "url": "http://unvired.com"
     }
-  ]
+  ],
+  "devDependencies": {
+    "gulp": "^4.0.2",
+    "gulp-uglify": "^3.0.2"
+  },
+  "dependencies": {
+    "readable-stream": "^3.4.0",
+    "uglify-es": "^3.3.9"
+  }
 }

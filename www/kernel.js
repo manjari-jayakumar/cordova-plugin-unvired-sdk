@@ -306,7 +306,7 @@ UMP.prototype.pullDb = function (success, fail) { // REMOVE
  *
  * @param {function} callback - (Optional) user supplied async callback / error handler
  */
-UMP.prototype.pushDB = function (success, fail) { // REMOVE
+UMP.prototype.pushDb = function (success, fail) { // REMOVE
     cordova.exec(success, fail, "DatabasePlugin", "pushDb", []);
 };
 /**
