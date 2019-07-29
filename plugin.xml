@@ -90,6 +90,6 @@
         <header-file src="src/ios/IOSSyncEnginePlugin.h"/>
         <header-file src="src/ios/UnviredFrameworkUtils.h"/>
         <header-file src="src/ios/AttachmentPlugin.h"/>
-        <framework src="UnviredCordovaSDK" type="podspec" spec="~> 3.0.145" />
+        <framework src="UnviredCordovaSDK" type="podspec" spec="~> 3.0.146" />
     </platform>
 </plugin>
