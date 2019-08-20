@@ -67,7 +67,7 @@
     <framework src='com.google.android.gms:play-services-location:16.0.0'/>
     <framework src='com.google.firebase:firebase-messaging:17.3.4'/>
     <framework src='com.google.firebase:firebase-core:16.0.6'/>
-    <framework src='net.zetetic:android-database-sqlcipher:4.0.1@aar'    
+    <framework src='net.zetetic:android-database-sqlcipher:4.0.1@aar'/>    
     </platform>
     <platform name="ios">
         <config-file parent="/*" target="config.xml">
