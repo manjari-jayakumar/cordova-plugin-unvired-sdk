@@ -625,7 +625,6 @@ UMP.prototype.deleteOutBoxEntry = function (beLid, success, fail) {
 UMP.prototype.resetApplicationSyncData = function (success, fail) {
     cordova.exec(success, fail, "SyncEnginePlugin", "resetApplicationSyncData", []);
 };
-UMP.prototype.requestType = requestType;
 
 UMP.prototype.generateUBJson = function (headerName, header, itemName, items, success, fail) {
     var options = {}
