@@ -9,23 +9,6 @@ var helper = function () {
 
 }
 
-var loginListenerType = {
-    auth_activation_required: 0, // Mobile app not yet activated and requires authentication and activation
-    app_requires_login: 1, // Mobile app requires offline / local login
-    auth_activation_success: 2, // Account authenticated and activated on the server
-    auth_activation_error: 3, // Acoount authentication or aactivation failed on the server
-    login_success: 4, // Mobile app login successful
-    login_error: 5, // Mobile app login failure
-    app_requires_current_account: 6 // Multiple account found hence app has to set current active account
-}
-
-var loginType = {
-    unvired: "UNVIRED_ID",
-    ads: "ADS",
-    sap: "SAP",
-    custom: "CUSTOM"
-}
-
 /**
  *  loginMode is used to check for specific parameters for different mode 
  */
@@ -34,6 +17,7 @@ var loginMode = {
     authLocal: 1,
     forgotPassword: 2
 }
+
 /**
  * result type in returned callbackResult
  */
@@ -41,73 +25,6 @@ var resultType = {
     success: 0,
     error: 1
 }
-/**
- * Decide application data add /modify / delete based on the request type.
- * 0. RQST - Response for client initiated request. Act based on the 'action' flag.
- * 1. PULL - Server initiated push. The data on the client should be replaced with this data. 
- * 2. PUSH - Backend application initiated push of data. Act on this based on the 'action' flag.
- * 3. QUERY - Data query requests from client to server.
- * 4. REQ - Data submit only requests from client to server.
- */
-var requestType = {
-    RQST: 0,
-    PULL: 1,
-    PUSH: 2,
-    QUERY: 3,
-    REQ: 4
-}
-
-var conflictRule = {
-    SERVER_WINS: 0,
-    CLIENT_WINS: 1
-}
-
-var AttachmentItemStatus = {
-    DEFAULT: 0,
-    QUEUED_FOR_DOWNLOAD: 1,
-    DOWNLOADED: 2,
-    ERROR_IN_DOWNLOAD: 3,
-    SAVED_FOR_UPLOAD: 4,
-    UPLOADED: 5,
-    ERROR_IN_UPLOAD: 6,
-    MARKED_FOR_DELETE: 7,
-    EXTERNAL: 8
-}
-
-var notifListenerType = {
-    dataSend: 0, //Notify successful asynchronous send of data to the server.
-    dataChanged: 1, //Notify data changes for each BusinessEntity when received data from server.
-    dataReceived: 2, //Notify data receive completion on receive of all BusinessEntity
-    appReset: 3, //Notify application data reset.
-    attachmentDownloadSuccess: 4, // Notify application with error message and attchment item on attachment download error
-    attachmentDownloadError: 5, //Notify application with error message and attchment item on attachment download success 
-    incomingDataProcessingFinished: 6, //Notify application when incoming data handling finished 
-    attachmentDownloadWaiting: 7, //Notify application when attachment download is waiting on the server
-    infoMessage: 8, //Notify application with any InfoMessages
-    serverError: 9, //Notify application with Server errors
-    attachmentDownloadCompleted: 10 //Notify attachment downloads completed
-}
-
-var metadata = {
-    "sMeta": [],
-    "fMeta": [],
-    "bMeta": []
-}
-
-const httpType = {
-    get: "GET",
-    post: "POST",
-    del: "DELETE"
-};
-
-var restApis = {
-    defaultApi: '/UMP/API/v2/applications/',
-    activate: '/activate/',
-    authenticate: '/authenticate',
-    session: '/UMP/API/v2/session/',
-    execute: '/execute/',
-    users: '/UMP/API/v2/users/'
-};
 
 UMP.prototype.logDebug = function (sourceClass, method, message) {
     cordova.exec(null, null, "LoggerPlugin", "logDebug", [{
@@ -153,11 +70,29 @@ UMP.prototype.sendLogViaEmail = function (success, fail) {
 };
 
 UMP.prototype.login = function (loginParameters, success, fail) {
-    parameters = loginParameters
-    if (helper.isEmpty(parameters.appName)) {
+
+    if (helper.isEmpty(loginParameters.appName)) {
         helper.sendError("Please provide valid app name!", fail);
         return;
     }
+
+    // Read the JSON from metadata path if not provided already.
+    if ((!loginParameters.metadataJSON || loginParameters.metadataJSON.length == 0) && loginParameters.metadataPath.length > 0) {
+        var xobj = new XMLHttpRequest();
+        xobj.overrideMimeType("application/json");
+        var metadataPath = loginParameters.metadataPath;
+        xobj.open('GET', metadataPath, true);
+        xobj.onreadystatechange = function () {
+            if (xobj.readyState == 4 && xobj.status == 200) {
+                loginParameters.metadataJSON = xobj.responseText
+                parameters = loginParameters
+                cordova.exec(success, fail, "LoginPlugin", "login", [parameters]);
+            }
+        };
+        xobj.send(null);
+        return
+    }
+    parameters = loginParameters
     cordova.exec(success, fail, "LoginPlugin", "login", [parameters]);
 };
 /**;
@@ -183,10 +118,7 @@ UMP.prototype.logout = function (success, fail) {
  *  @param {function} callback - (Optional) user supplied async callback / error handler
  */
 UMP.prototype.authenticateAndActivate = function (loginParameters, success, fail) {
-    /* Add to the existing Login Parameters */
-
     for (var k in loginParameters) parameters[k] = loginParameters[k];
-
     if (!helper.validateLoginParameters(loginMode.authActivate, fail))
         return;
 
@@ -207,9 +139,7 @@ UMP.prototype.authenticateAndActivate = function (loginParameters, success, fail
  *  Mobile Only api
  */
 UMP.prototype.authenticateLocal = function (loginParameters, success, fail) {
-    /* Add to the existing Login Parameters */
     for (var k in loginParameters) parameters[k] = loginParameters[k];
-
     if (!helper.validateLoginParameters(loginMode.authLocal, fail))
         return;
     cordova.exec(success, fail, "LoginPlugin", "authenticateLocal", [parameters]);
@@ -712,17 +642,17 @@ UMP.prototype.parseRawUBJson = function (json, sucess, fail) {
     cordova.exec(success, fail, 'SyncEnginePlugin', 'parseRawUBJson', options)
 }
 
-UMP.prototype.dbGetCollection = function(tableName, success, fail) {
+UMP.prototype.dbGetCollection = function (tableName, success, fail) {
     var options = {}
     options['tableName'] = tableName
     cordova.exec(success, fail, 'DatabasePlugin', 'dbGetCollection', options)
 }
 
-UMP.prototype.dbReload = function(sucess, fail) {
+UMP.prototype.dbReload = function (sucess, fail) {
     cordova.exec(success, fail, 'DatabasePlugin', 'dbReload', [])
 }
 
-UMP.prototype.reCreateAppDB = function(success, fail) {
+UMP.prototype.reCreateAppDB = function (success, fail) {
     cordova.exec(success, fail, 'DatabasePlugin', 'reCreateAppDB', [])
 }
 
