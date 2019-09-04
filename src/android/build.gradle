@@ -1,0 +1,37 @@
+apply plugin: 'com.android.library'
+
+repositories {
+    // Required for build
+    jcenter()
+    flatDir {
+        dirs 'libs'
+    }
+}
+
+android {
+  packagingOptions {
+    exclude 'META-INF/NOTICE'
+    exclude 'META-INF/LICENSE'
+  }
+}
+
+android {
+    compileSdkVersion 28
+   
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 28        
+    }
+
+    /*
+
+    lintOptions {
+        abortOnError false
+    }*/
+
+}
+
+dependencies {
+   
+    implementation fileTree(dir: 'libs', include: ['*.aar'])
+}
