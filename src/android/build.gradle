@@ -1,5 +1,3 @@
-apply plugin: 'android-library'
-
 repositories {
     // Required for build
     jcenter()
