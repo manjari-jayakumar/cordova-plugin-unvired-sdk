@@ -2,7 +2,7 @@ repositories {
     // Required for build
     jcenter()
     flatDir {
-        dirs 'libs'
+        dirs 'src/main/libs'
     }
 }
 
@@ -31,5 +31,5 @@ android {
 
 dependencies {
    
-    implementation fileTree(dir: 'libs', include: ['*.aar'])
+    implementation fileTree(dir: 'src/main/libs', include: ['*.aar'])
 }
