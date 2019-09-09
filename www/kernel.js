@@ -81,7 +81,7 @@ UMP.prototype.login = function (loginParameters, success, fail) {
         return;
     }
 
-    if (!loginParameters.url && loginParameters.url.length > 0) {
+    if (loginParameters.url && loginParameters.url.length > 0) {
         loginParameters.url = helper.sanitizeUMPURL(loginParameters.url)
     }
 
@@ -129,7 +129,7 @@ UMP.prototype.logout = function (success, fail) {
 UMP.prototype.authenticateAndActivate = function (loginParameters, success, fail) {
     for (var k in loginParameters) parameters[k] = loginParameters[k];
 
-    if (!loginParameters.url && loginParameters.url.length > 0) {
+    if (loginParameters.url && loginParameters.url.length > 0) {
         loginParameters.url = helper.sanitizeUMPURL(loginParameters.url)
     }
 
@@ -155,7 +155,7 @@ UMP.prototype.authenticateAndActivate = function (loginParameters, success, fail
 UMP.prototype.authenticateLocal = function (loginParameters, success, fail) {
     for (var k in loginParameters) parameters[k] = loginParameters[k];
 
-    if (!loginParameters.url && loginParameters.url.length > 0) {
+    if (loginParameters.url && loginParameters.url.length > 0) {
         loginParameters.url = helper.sanitizeUMPURL(loginParameters.url)
     }
     
