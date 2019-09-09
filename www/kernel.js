@@ -86,7 +86,7 @@ UMP.prototype.login = function (loginParameters, success, fail) {
     }
 
     // Read the metadata from metadataPath
-    if ((!loginParameters.loginParameters.metadataPath) && loginParameters.metadataPath.length > 0) {
+    if (loginParameters.metadataPath && loginParameters.metadataPath.length > 0) {
         var xobj = new XMLHttpRequest();
         xobj.overrideMimeType("application/json");
         var metadataPath = loginParameters.metadataPath;
