@@ -18,6 +18,14 @@ var loginMode = {
     forgotPassword: 2
 }
 
+var loginType = {
+    unvired: "UNVIRED_ID",
+    ads: "ADS",
+    sap: "SAP",
+    custom: "CUSTOM",
+    email: "EMAIL"
+}
+
 /**
  * result type in returned callbackResult
  */
@@ -683,8 +691,8 @@ helper.validateLoginParameters = function (mode, callback) {
         this.sendError("No Login Type specified in LoginParameters!", callback);
         return false;
     }
-    // FIXME: 
-    if (parameters.loginType === 'sap' /* this.loginType.sap */ || parameters.loginType === 'ads' /* this.loginType.ads */) {
+    
+    if (parameters.loginType === loginType.sap || parameters.loginType === loginType.ads) {
         if (!parameters.domain) {
             this.sendError("Please provide Domain!", callback);
             return false;
