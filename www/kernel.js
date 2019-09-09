@@ -127,12 +127,12 @@ UMP.prototype.logout = function (success, fail) {
  *  @param {function} callback - (Optional) user supplied async callback / error handler
  */
 UMP.prototype.authenticateAndActivate = function (loginParameters, success, fail) {
-    for (var k in loginParameters) parameters[k] = loginParameters[k];
 
     if (loginParameters.url && loginParameters.url.length > 0) {
         loginParameters.url = helper.sanitizeUMPURL(loginParameters.url)
     }
-
+    for (var k in loginParameters) parameters[k] = loginParameters[k];
+    
     if (!helper.validateLoginParameters(loginMode.authActivate, fail))
         return;
 
@@ -153,11 +153,10 @@ UMP.prototype.authenticateAndActivate = function (loginParameters, success, fail
  *  Mobile Only api
  */
 UMP.prototype.authenticateLocal = function (loginParameters, success, fail) {
-    for (var k in loginParameters) parameters[k] = loginParameters[k];
-
     if (loginParameters.url && loginParameters.url.length > 0) {
         loginParameters.url = helper.sanitizeUMPURL(loginParameters.url)
     }
+    for (var k in loginParameters) parameters[k] = loginParameters[k];
     
     if (!helper.validateLoginParameters(loginMode.authLocal, fail))
         return;
@@ -755,6 +754,9 @@ helper.sendError = function (msg, callback) {
 };
 
 helper.sanitizeUMPURL = function(url) {
+    if (!url) {
+        return ''
+    }
     if (url.endsWith('/UMP') || url.endsWith('/UMP/') || url.endsWith('?local')) {   
         return url
     }
