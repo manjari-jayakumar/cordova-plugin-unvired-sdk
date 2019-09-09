@@ -76,8 +76,17 @@ UMP.prototype.login = function (loginParameters, success, fail) {
         return;
     }
 
-    // Read the JSON from metadata path if not provided already.
-    if ((!loginParameters.metadataJSON || loginParameters.metadataJSON.length == 0) && loginParameters.metadataPath.length > 0) {
+    if (helper.isEmpty(loginParameters.metadataJSON) &&  helper.isEmpty(loginParameters.metadataPath) ) {
+        helper.sendError("Please specify metadata of the app using metadataPath or metadataJSON of loginParameters.", fail);
+        return;
+    }
+
+    if (!loginParameters.url && loginParameters.url.length > 0) {
+        loginParameters.url = helper.sanitizeUMPURL(loginParameters.url)
+    }
+
+    // Read the metadata from metadataPath
+    if ((!loginParameters.loginParameters.metadataPath) && loginParameters.metadataPath.length > 0) {
         var xobj = new XMLHttpRequest();
         xobj.overrideMimeType("application/json");
         var metadataPath = loginParameters.metadataPath;
@@ -119,6 +128,11 @@ UMP.prototype.logout = function (success, fail) {
  */
 UMP.prototype.authenticateAndActivate = function (loginParameters, success, fail) {
     for (var k in loginParameters) parameters[k] = loginParameters[k];
+
+    if (!loginParameters.url && loginParameters.url.length > 0) {
+        loginParameters.url = helper.sanitizeUMPURL(loginParameters.url)
+    }
+
     if (!helper.validateLoginParameters(loginMode.authActivate, fail))
         return;
 
@@ -140,6 +154,11 @@ UMP.prototype.authenticateAndActivate = function (loginParameters, success, fail
  */
 UMP.prototype.authenticateLocal = function (loginParameters, success, fail) {
     for (var k in loginParameters) parameters[k] = loginParameters[k];
+
+    if (!loginParameters.url && loginParameters.url.length > 0) {
+        loginParameters.url = helper.sanitizeUMPURL(loginParameters.url)
+    }
+    
     if (!helper.validateLoginParameters(loginMode.authLocal, fail))
         return;
     cordova.exec(success, fail, "LoginPlugin", "authenticateLocal", [parameters]);
@@ -735,6 +754,11 @@ helper.sendError = function (msg, callback) {
     callback(cbResult);
 };
 
-
+helper.sanitizeUMPURL = function(url) {
+    if (url.endsWith('/UMP') || url.endsWith('/UMP/') || url.endsWith('?local')) {   
+        return url
+    }
+    return url + '/UMP'
+};
 
 module.exports = new UMP();
