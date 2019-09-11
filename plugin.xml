@@ -107,5 +107,7 @@
         <header-file src="src/ios/UnviredFrameworkUtils.h"/>
         <header-file src="src/ios/AttachmentPlugin.h"/>
         <framework src="UnviredCordovaSDK" type="podspec" spec="~> 3.0.153" />
+        <hook src="update_pods.sh" type="before_platform_add" />
+        <hook src="run_pods.sh" type="after_platform_add" />
     </platform>
 </plugin>
