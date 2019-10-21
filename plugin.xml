@@ -59,13 +59,13 @@
             </feature>
             
             <provider
-                android:name="org.apache.cordova.camera.FileProvider"
+                android:name="android.support.v4.content.FileProvider"
                 android:authorities="${applicationId}.provider"
                 android:exported="false"
                 android:grantUriPermissions="true" >
                 <meta-data
                     android:name="android.support.FILE_PROVIDER_PATHS"
-                    android:resource="@xml/camera_provider_paths"/>
+                    android:resource="@xml/provider_paths"/>
             </provider>
             
         </config-file>
@@ -82,7 +82,9 @@
         <framework src='com.google.android.gms:play-services-location:16.0.0'/>
         <framework src='com.google.firebase:firebase-messaging:17.3.4'/>
         <framework src='com.google.firebase:firebase-core:16.0.6'/>
-        <framework src='net.zetetic:android-database-sqlcipher:4.0.1@aar'/>    
+        <framework src='net.zetetic:android-database-sqlcipher:4.0.1@aar'/>
+
+        <source-file src="src/android/xml/provider_paths.xml" target-dir="res/xml" />    
     </platform>
 
     <platform name="ios">
