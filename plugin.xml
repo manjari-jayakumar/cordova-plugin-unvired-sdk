@@ -56,9 +56,11 @@
             </feature>
             <feature name="AttachmentPlugin">
                 <param name="android-package" value="com.unvired.plugin.AndroidAttachmentPlugin" />
-            </feature>
-            
-            <provider
+            </feature>            
+        </config-file>
+
+        <config-file target="AndroidManifest.xml" parent="application">
+          <provider
                 android:name="android.support.v4.content.FileProvider"
                 android:authorities="${applicationId}.provider"
                 android:exported="false"
@@ -67,8 +69,8 @@
                     android:name="android.support.FILE_PROVIDER_PATHS"
                     android:resource="@xml/provider_paths"/>
             </provider>
-            
         </config-file>
+		<source-file src="src/android/xml/provider_paths.xml" target-dir="res/xml"/>
 
         <!--To refer .aar files-->
         <framework src="src/android/build.gradle" custom="true" type="gradleReference" />
@@ -85,7 +87,7 @@
         <framework src='com.google.firebase:firebase-core:16.0.6'/>
         <framework src='net.zetetic:android-database-sqlcipher:4.0.1@aar'/>
 		
-        <source-file src="src/android/xml/provider_paths.xml" target-dir="res/xml"/>
+        
 
     </platform>
 
