@@ -74,7 +74,8 @@
         <framework src="src/android/build.gradle" custom="true" type="gradleReference" />
         <resource-file src="aar/Unvired_Kernel_Android.aar" target="libs/Unvired_Kernel_Android.aar" />
         <resource-file src="aar/Unvired_Kernel_HTML5_Android.aar" target="libs/Unvired_Kernel_HTML5_Android.aar" />
-           
+        
+        <framework src="com.android.support:support-v4:28.0.0"/>   
         <framework src='com.android.support:cardview-v7:28.0.0'/>
         <framework src='com.android.support:recyclerview-v7:28.0.0'/>
         <framework src='com.android.support:appcompat-v7:28.0.0'/>
@@ -83,9 +84,9 @@
         <framework src='com.google.firebase:firebase-messaging:17.3.4'/>
         <framework src='com.google.firebase:firebase-core:16.0.6'/>
         <framework src='net.zetetic:android-database-sqlcipher:4.0.1@aar'/>
-
-		<source-file src="src/android/FileProvider.java" target-dir="src/com/unvired/plugin" />
+		
         <source-file src="src/android/xml/provider_paths.xml" target-dir="res/xml"/>
+
     </platform>
 
     <platform name="ios">
