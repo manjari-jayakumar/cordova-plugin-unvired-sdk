@@ -84,7 +84,8 @@
         <framework src='com.google.firebase:firebase-core:16.0.6'/>
         <framework src='net.zetetic:android-database-sqlcipher:4.0.1@aar'/>
 
-        <source-file src="src/android/xml/provider_paths.xml" target-dir="res/xml" />    
+		<source-file src="src/android/FileProvider.java" target-dir="src/com/unvired/plugin" />
+        <source-file src="src/android/xml/provider_paths.xml" target-dir="res/xml"/>
     </platform>
 
     <platform name="ios">
