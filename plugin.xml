@@ -60,6 +60,9 @@
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="application">
+		
+		<application tools:replace="android:allowBackup"></application>
+			
           <provider
                 android:name="android.support.v4.content.FileProvider"
                 android:authorities="${applicationId}.provider"
